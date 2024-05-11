@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<body>
+  <div id="app">
+    <h1>Cadê Buffet?</h1>
+
+    <input type="text" v-model="searchText" placeholder="Buscar Buffet">
+
+    <div v-if="!selectedBuffet">
+      <div v-if="listResult.length <= 0">
+        Nenhum Buffet encontrado.
+      </div>
+
+      <div v-for="item in listResult">
+        <p @click="selectBuffet(item)">
+          {{ item.name }}<br>
+          {{ item.city }} - {{ item.state }}
+        </p>
+      </div>
+    </div>
+
+    <div v-else>
+      <button @click="deselectBuffet">Voltar para a lista</button>
+      <div>
+        <h2>{{ selectedBuffet.name }}</h2>
+        <p v-if="buffetDetails.description">{{ buffetDetails.description }}</p>
+        <p>{{ buffetDetails.address }}, {{ buffetDetails.neighborhood }}, {{ buffetDetails.city }} - {{ buffetDetails.state }}, {{ buffetDetails.zipcode }}</p>
+        <p>{{ buffetDetails.email }}</p>
+        <p>{{ buffetDetails.phone }}</p>
+        <p>Métodos de pagamento:
+          <ul>
+            <li v-if="buffetDetails.pix == true">PIX</li>
+            <li v-if="buffetDetails.debit == true">Cartão de Débito</li>
+            <li v-if="buffetDetails.credit == true">Cartão de Crédito</li>
+            <li v-if="buffetDetails.cash == true">Dinheiro</li>
+          </ul>
+        </p>
+        <h3 v-if="buffetDetails && buffetDetails.eventTypes && buffetDetails.eventTypes.length > 0">Tipos de Evento:</h3>
+        <div v-if="buffetDetails && buffetDetails.eventTypes && buffetDetails.eventTypes.length > 0">
+          <div v-for="eventType in buffetDetails.eventTypes" :key="eventType.id">
+            <div>
+              <h4>{{ eventType.name }}</h4>
+              <p>{{ eventType.description }}</p>
+              <p>{{ eventType.location }}</p>
+              <p>{{ eventType.duration }}</p>
+              <p>{{ eventType.min_people }}</p>
+              <p>{{ eventType.max_people }}</p>
+              <p>{{ eventType.menu }}</p>
+              <p v-if="eventType.alcohol == true">Bebidas Alcoólicas</p>
+              <p v-if="eventType.parking == true">Estacionamento/Valet</p>
+              <p v-if="eventType.decoration == true">Decoração</p>
+              <button @click="checkAvailability(eventType.id)" :disabled="!eventType.price">Check Availability</button>
+              <label for="date" v-if="eventType.price">Date:</label>
+              <input type="date" id="date" v-model="availabilityParams.date" :disabled="!eventType.price">
+              <label for="guests" v-if="eventType.price">Guests:</label>
+              <input type="number" id="guests" v-model="availabilityParams.guests" :disabled="!eventType.price">
+              <p v-if="!eventType.price">Para verificar a disponibilidade, o evento deve ter um preço.</p>
+              <div v-if="availabilityResponse">
+                <h3>Availability Result</h3>
+                <pre v-if="availabilityResponse.price">{{ availabilityResponse.price }}</pre>
+                <div v-if="availabilityResponse.warnings && availabilityResponse.warnings.length > 0">
+                  <ul>
+                    <li v-for="(warning, index) in availabilityResponse.warnings" :key="index">{{ warning }}</li>
+                  </ul>
+                </div>
+              </div>              
+            </div>
+            <div v-if="eventType.price">
+              <p>{{ eventType.price.base }}</p>
+              <p>{{ eventType.price.extra_person }}</p>
+              <p>{{ eventType.price.extra_hour }}</p>
+              <p>{{ eventType.price.weekend_base }}</p>
+              <p>{{ eventType.price.weekend_extra_person }}</p>
+              <p>{{ eventType.price.weekend_extra_hour }}</p>
+            </div>
+          </div>
+        </div>
+        <div v-if="!buffetDetails">
+          Carregando detalhes do Buffet...
+        </div>
+      </div>
+    </div>
+  </div>
+  <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+  <script src="main.js"></script>
+</body>
+</html>
