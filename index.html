@@ -4,89 +4,109 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Document</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous">
 </head>
 <body>
-  <div id="app">
-    <h1>Cadê Buffet?</h1>
+  <div id="app" class="container mt-4">
+    <h1 class="text-center mb-4">Cadê Buffet?</h1>
 
-    <input type="text" v-model="searchText" placeholder="Buscar Buffet">
+    <div class="input-group mb-3">
+      <input type="text" v-model="searchText" class="form-control" placeholder="Buscar Buffet">
+    </div>
 
     <div v-if="!selectedBuffet">
-      <div v-if="listResult.length <= 0">
+      <div v-if="listResult.length <= 0" class="alert alert-info">
         Nenhum Buffet encontrado.
       </div>
 
-      <div v-for="item in listResult">
-        <p @click="selectBuffet(item)">
-          {{ item.name }}<br>
-          {{ item.city }} - {{ item.state }}
-        </p>
+      <div v-for="item in listResult" :key="item.id" class="card mb-3">
+        <div class="card-body" @click="selectBuffet(item)">
+          <h5 class="card-title">{{ item.name }}</h5>
+          <p class="card-text">{{ item.city }} - {{ item.state }}</p>
+        </div>
       </div>
     </div>
 
     <div v-else>
-      <button @click="deselectBuffet">Voltar para a lista</button>
-      <div>
-        <h2>{{ selectedBuffet.name }}</h2>
-        <p v-if="buffetDetails.description">{{ buffetDetails.description }}</p>
-        <p>{{ buffetDetails.address }}, {{ buffetDetails.neighborhood }}, {{ buffetDetails.city }} - {{ buffetDetails.state }}, {{ buffetDetails.zipcode }}</p>
-        <p>{{ buffetDetails.email }}</p>
-        <p>{{ buffetDetails.phone }}</p>
-        <p>Métodos de pagamento:
-          <ul>
-            <li v-if="buffetDetails.pix == true">PIX</li>
-            <li v-if="buffetDetails.debit == true">Cartão de Débito</li>
-            <li v-if="buffetDetails.credit == true">Cartão de Crédito</li>
-            <li v-if="buffetDetails.cash == true">Dinheiro</li>
+      <button @click="deselectBuffet" class="btn btn-secondary mb-3">Voltar para a lista</button>
+      <div class="card">
+        <div class="card-body">
+          <h2 class="card-title">Buffet {{ selectedBuffet.name }}</h2>
+          <p class="card-text" v-if="buffetDetails.description">Descrição: {{ buffetDetails.description }}</p>
+          <p class="card-text">Endereço: {{ buffetDetails.address }}, {{ buffetDetails.neighborhood }}, {{ buffetDetails.city }} - {{ buffetDetails.state }}, {{ buffetDetails.zipcode }}</p>
+          <p class="card-text">E-mail: {{ buffetDetails.email }}</p>
+          <p class="card-text">Telefone: {{ buffetDetails.phone }}</p>
+          <p class="card-text">Métodos de pagamento:</p>
+          <ul class="list-group list-group-flush">
+            <li class="list-group-item" v-if="buffetDetails.pix == true">PIX</li>
+            <li class="list-group-item" v-if="buffetDetails.debit == true">Cartão de Débito</li>
+            <li class="list-group-item" v-if="buffetDetails.credit == true">Cartão de Crédito</li>
+            <li class="list-group-item" v-if="buffetDetails.cash == true">Dinheiro</li>
           </ul>
-        </p>
-        <h3 v-if="buffetDetails && buffetDetails.eventTypes && buffetDetails.eventTypes.length > 0">Tipos de Evento:</h3>
-        <div v-if="buffetDetails && buffetDetails.eventTypes && buffetDetails.eventTypes.length > 0">
-          <div v-for="eventType in buffetDetails.eventTypes" :key="eventType.id">
-            <div>
-              <h4>{{ eventType.name }}</h4>
-              <p>{{ eventType.description }}</p>
-              <p>{{ eventType.location }}</p>
-              <p>{{ eventType.duration }}</p>
-              <p>{{ eventType.min_people }}</p>
-              <p>{{ eventType.max_people }}</p>
-              <p>{{ eventType.menu }}</p>
-              <p v-if="eventType.alcohol == true">Bebidas Alcoólicas</p>
-              <p v-if="eventType.parking == true">Estacionamento/Valet</p>
-              <p v-if="eventType.decoration == true">Decoração</p>
-              <button @click="checkAvailability(eventType.id)" :disabled="!eventType.price">Check Availability</button>
-              <label for="date" v-if="eventType.price">Date:</label>
-              <input type="date" id="date" v-model="availabilityParams.date" :disabled="!eventType.price">
-              <label for="guests" v-if="eventType.price">Guests:</label>
-              <input type="number" id="guests" v-model="availabilityParams.guests" :disabled="!eventType.price">
-              <p v-if="!eventType.price">Para verificar a disponibilidade, o evento deve ter um preço.</p>
-              <div v-if="availabilityResponse">
-                <h3>Availability Result</h3>
-                <pre v-if="availabilityResponse.price">{{ availabilityResponse.price }}</pre>
-                <div v-if="availabilityResponse.warnings && availabilityResponse.warnings.length > 0">
-                  <ul>
-                    <li v-for="(warning, index) in availabilityResponse.warnings" :key="index">{{ warning }}</li>
-                  </ul>
+          <h3 class="mt-3" v-if="buffetDetails && buffetDetails.eventTypes && buffetDetails.eventTypes.length > 0">Tipos de Evento:</h3>
+          <div v-if="buffetDetails && buffetDetails.eventTypes && buffetDetails.eventTypes.length > 0">
+            <div v-for="eventType in buffetDetails.eventTypes" :key="eventType.id" class="card mt-3">
+              <div class="card-body">
+                <h4 class="card-title">{{ eventType.name }}</h4>
+                <p class="card-text" v-if="eventType.description">Descrição: {{ eventType.description }}</p>
+                <p class="card-text">Localização: 
+                  <span v-if="eventType.location == 'exclusive'">No endereço do Buffet</span>
+                  <span v-if="eventType.location == 'anywhere'">Em qualquer local solicitado</span>
+                </p>
+                <p class="card-text">Duração (minutos): {{ eventType.duration }}</p>
+                <p class="card-text">Quantidade mínima de pessoas: {{ eventType.min_people }}</p>
+                <p class="card-text">Quantidade máxima de pessoas: {{ eventType.max_people }}</p>
+                <p class="card-text">Cardápio: {{ eventType.menu }}</p>
+                <p class="card-text" v-if="eventType.alcohol == true">Bebidas Alcoólicas</p>
+                <p class="card-text" v-if="eventType.parking == true">Estacionamento/Valet</p>
+                <p class="card-text" v-if="eventType.decoration == true">Decoração</p>
+
+                <div class="card-text mt-3" v-if="eventType.price">
+                  <div class="row">
+                    <div class="col">
+                      <span>Preço Base: {{ eventType.price.base }}</span><br>
+                      <span>Valor extra por pessoa: {{ eventType.price.extra_person }}</span><br>
+                      <span>Valor extra por hora: {{ eventType.price.extra_hour }}</span>
+                    </div>
+                    <div class="col">
+                      <span v-if="eventType.price.weekend_base">Preço Base em finais de semana (FDS): {{ eventType.price.weekend_base }}</span><br>
+                      <span v-if="eventType.price.weekend_extra_person">Valor extra por pessoa (FDS): {{ eventType.price.weekend_extra_person }}</span><br>
+                      <span v-if="eventType.price.weekend_extra_hour">Valor extra por hora (FDS): {{ eventType.price.weekend_extra_hour }}</span>
+                    </div>
+                  </div>
                 </div>
-              </div>              
-            </div>
-            <div v-if="eventType.price">
-              <p>{{ eventType.price.base }}</p>
-              <p>{{ eventType.price.extra_person }}</p>
-              <p>{{ eventType.price.extra_hour }}</p>
-              <p>{{ eventType.price.weekend_base }}</p>
-              <p>{{ eventType.price.weekend_extra_person }}</p>
-              <p>{{ eventType.price.weekend_extra_hour }}</p>
+                <br>
+                <div>
+                  <strong class="card-text">Consulte a disponibilidade deste Evento:</strong>
+                  <div class="input-group mt-3">
+                    <label for="date" class="input-group-text" v-if="eventType.price">Data:</label>
+                    <input type="date" id="date" v-model="availabilityParams.date" :disabled="!eventType.price" class="form-control">
+                    <label for="guests" class="input-group-text" v-if="eventType.price">Quantidade de Convidados:</label>
+                    <input type="number" id="guests" v-model="availabilityParams.guests" :disabled="!eventType.price" class="form-control">
+                    <button @click="checkAvailability(eventType)" :disabled="!eventType.price" class="btn btn-primary">Verificar Disponibilidade</button>
+                  </div>
+                  <p class="card-text mt-3" v-if="!eventType.price">Para verificar a disponibilidade, o evento deve ter preços definidos.</p>
+                  <div v-if="eventType.availabilityResponse" class="mt-3">
+                    <div v-if="eventType.availabilityResponse.price" class="alert alert-success">
+                      Data disponível! Preço estimado: {{ eventType.availabilityResponse.price }}
+                    </div>
+                    <div v-if="eventType.availabilityResponse.warnings && eventType.availabilityResponse.warnings.length > 0" class="alert alert-warning" role="alert">
+                      <span v-for="(warning, index) in eventType.availabilityResponse.warnings" :key="index">{{ warning }}</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
-        </div>
-        <div v-if="!buffetDetails">
-          Carregando detalhes do Buffet...
+          <div v-if="!buffetDetails" class="alert alert-info mt-3">
+            Carregando detalhes do Buffet...
+          </div>
         </div>
       </div>
     </div>
   </div>
   <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
   <script src="main.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-kenU1KFdBIe4zVF0s0G1M5b4hcpxyD9F7jL+jjXkk+Q2h455rYXK/7HAuoJl+0I4" crossorigin="anonymous"></script>
 </body>
 </html>
