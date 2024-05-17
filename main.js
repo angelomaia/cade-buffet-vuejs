@@ -1,4 +1,3 @@
-// main.js
 const app = Vue.createApp({
   data() {
     return {
@@ -72,7 +71,6 @@ const app = Vue.createApp({
       try {
         let response = await fetch(`http://localhost:3000/api/v1/availability_check?date=${this.availabilityParams.date}&guests=${this.availabilityParams.guests}&event_type_id=${eventType.id}`);
         let data = await response.json();
-        // Update availability response for the current eventType
         eventType.availabilityResponse = data;
         console.log(data);
       } catch (error) {

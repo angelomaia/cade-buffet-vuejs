@@ -33,6 +33,7 @@
         <div class="card-body">
           <h2 class="card-title">Buffet {{ selectedBuffet.name }}</h2>
           <p class="card-text" v-if="buffetDetails.description">Descrição: {{ buffetDetails.description }}</p>
+          <p class="card-text" v-if="buffetDetails.average_rating">Nota (0 - 5): {{ buffetDetails.average_rating }}</p>
           <p class="card-text">Endereço: {{ buffetDetails.address }}, {{ buffetDetails.neighborhood }}, {{ buffetDetails.city }} - {{ buffetDetails.state }}, {{ buffetDetails.zipcode }}</p>
           <p class="card-text">E-mail: {{ buffetDetails.email }}</p>
           <p class="card-text">Telefone: {{ buffetDetails.phone }}</p>
